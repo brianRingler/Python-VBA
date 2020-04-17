@@ -1,0 +1,90 @@
+Sub pdf_merger_shell32()
+
+'### Required Imports ###
+' > Tools > References... > Microsoft Shell Controls And Automation
+' Shell32 Object allows running Python script without python.exe
+
+Dim shell As Shell32.shell
+Dim script_name, script_path, path_to_script As String
+
+Application.ScreenUpdating = False
+'name of the python script that merges pdfs
+script_name = "merge_pdf.py"
+
+'path to the pdf files user would like to convert
+script_path = Sheet1.Range("file_path").Value
+
+'join the path and script name
+path_to_script = script_path & "\" & python_name
+
+' check for possible errors
+If script_name = "" Then
+    MsgBox "Not able to find Python script merge_pdf.py", vbOKOnly, "Contact RingVision"
+    GoTo ErrorLog
+End If
+
+If script_path = "" Then
+    MsgBox "Script path is missing. Update cell H28", vbOKOnly, "Correct Cell H28"
+End If
+
+
+'creat a shell object
+Set shell = New Shell32.shell
+shell.ShellExecute file:=path_to_script
+
+
+Application.ScreenUpdating = True
+Exit Sub
+ErrorLog:
+
+Application.ScreenUpdating = True
+End Sub
+Sub run_python_pdf_merger()
+
+Dim shell As Object
+Dim python_exe, script_name, script_path As String
+
+Application.ScreenUpdating = False
+'name of the python script that merges pdfs
+script_name = "merge_pdf.py"
+
+'path to the pdf files user would like to convert
+script_path = Sheet1.Range("file_path").Value
+
+'path to the python.exe file installed on local machine
+python_exe = Sheet1.Range("python_exe").Value
+
+' check for possible errors
+If script_name = "" Then
+    MsgBox "Not able to find Python script merge_pdf.py", vbOKOnly, "Contact RingVision"
+    GoTo ErrorLog
+End If
+
+If script_path = "" Then
+    MsgBox "Script path is missing. Update cell H29", vbOKOnly, "Correct Cell H29"
+End If
+
+If python_exe = "" Then
+    MsgBox "Script path is missing. Update cell H28", vbOKOnly, "Correct Cell H28"
+End If
+
+'creat a shell object
+Set shell = VBA.CreateObject("Wscript.Shell")
+
+'join the path and script name
+script_path = script_path & "\" & script_name
+
+' path to the standard python exe file
+' required to run the script and must be in triple quotes
+'python_exe = """" & python_exe & "\python.exe"""
+python_exe = python_exe & "\python.exe"
+Debug.Print python_exe
+Debug.Print script_path
+shell.Run python_exe & " " & script_path
+
+Application.ScreenUpdating = True
+Exit Sub
+ErrorLog:
+
+Application.ScreenUpdating = True
+End Sub
