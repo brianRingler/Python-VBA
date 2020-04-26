@@ -1,90 +1,92 @@
-Sub pdf_merger_shell32()
 
-'### Required Imports ###
-' > Tools > References... > Microsoft Shell Controls And Automation
-' Shell32 Object allows running Python script without python.exe
-
-Dim shell As Shell32.shell
-Dim script_name, script_path, path_to_script As String
-
-Application.ScreenUpdating = False
-'name of the python script that merges pdfs
-script_name = "merge_pdf.py"
-
-'path to the pdf files user would like to convert
-script_path = Sheet1.Range("file_path").Value
-
-'join the path and script name
-path_to_script = script_path & "\" & python_name
-
-' check for possible errors
-If script_name = "" Then
-    MsgBox "Not able to find Python script merge_pdf.py", vbOKOnly, "Contact RingVision"
-    GoTo ErrorLog
-End If
-
-If script_path = "" Then
-    MsgBox "Script path is missing. Update cell H28", vbOKOnly, "Correct Cell H28"
-End If
-
-
-'creat a shell object
-Set shell = New Shell32.shell
-shell.ShellExecute file:=path_to_script
-
-
-Application.ScreenUpdating = True
-Exit Sub
-ErrorLog:
-
-Application.ScreenUpdating = True
-End Sub
 Sub run_python_pdf_merger()
+'''
+'This sub will call a Python script called merge_pdf and merge all files
+'in a user specified folder to one PDF
+'PyPDF2 1.26.0
+'
+'''
 
 Dim shell As Object
-Dim python_exe, script_name, script_path As String
+Dim python_exe, script_name, script_path, pdf_path As String
+
 
 Application.ScreenUpdating = False
+
+
 'name of the python script that merges pdfs
 script_name = "merge_pdf.py"
 
+
+'what is the path of the pdf files. Assuming same as workbook
+pdf_path = Application.ActiveWorkbook.path
+'Debug.Print "This is pdf_path:  " & pdf_path
+
+
 'path to the pdf files user would like to convert
 script_path = Sheet1.Range("file_path").Value
+
 
 'path to the python.exe file installed on local machine
 python_exe = Sheet1.Range("python_exe").Value
 
+
 ' check for possible errors
 If script_name = "" Then
-    MsgBox "Not able to find Python script merge_pdf.py", vbOKOnly, "Contact RingVision"
-    GoTo ErrorLog
+    MsgBox "Not able to find Python script called merge_pdf.py" & _
+    "Process will exit and files will not be merged", vbOKOnly, "Contact RingVision"
+    Application.ScreenUpdating = True
+    Exit Sub
 End If
+
 
 If script_path = "" Then
-    MsgBox "Script path is missing. Update cell H29", vbOKOnly, "Correct Cell H29"
+    MsgBox "Script path is missing. Update cell H29" & _
+    "Process will exit and files will not be merged", vbOKOnly, "Correct Cell H29"
+    Application.ScreenUpdating = True
+    Exit Sub
 End If
 
+
 If python_exe = "" Then
-    MsgBox "Script path is missing. Update cell H28", vbOKOnly, "Correct Cell H28"
+    MsgBox "Python exe path is missing. Update cell H28" & _
+    "Process will exit and files will not be merged", vbOKOnly, "Correct Cell H28"
+    Application.ScreenUpdating = True
+    Exit Sub
 End If
+
 
 'creat a shell object
 Set shell = VBA.CreateObject("Wscript.Shell")
 
+
 'join the path and script name
 script_path = script_path & "\" & script_name
 
-' path to the standard python exe file
-' required to run the script and must be in triple quotes
-'python_exe = """" & python_exe & "\python.exe"""
-python_exe = python_exe & "\python.exe"
-Debug.Print python_exe
-Debug.Print script_path
-shell.Run python_exe & " " & script_path
+
+'path to the standard python exe file
+'required to run the script and must be in triple quotes
+'Supposed to be required if spaces in path or file only but was not working unless """ quotes
+python_exe = """" & python_exe & "\python.exe"""
+
+
+'run python script (merge_pdf.py)
+'pass ONE argument path to PDFs
+shell.Run python_exe & " " & script_path & " " & pdf_path
+
+
+'run python script not passing any arguments
+'shell.Run python_exe & " " & script_path
+
+
 
 Application.ScreenUpdating = True
 Exit Sub
-ErrorLog:
 
+
+ErrorLog:
+'create log
 Application.ScreenUpdating = True
+
+
 End Sub
