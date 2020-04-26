@@ -33,7 +33,7 @@ logging.basicConfig(level=logging.INFO,
                     format='%(name)s - %(levelname)s - %(asctime)s - %(message)s - %(pathname)s')
 
 try:
-    from PyPDF import PdfFileMerger
+    from PyPDF2 import PdfFileMerger
 except ImportError:
     ret_val = error_msg('PyPDF2NotFound')
     if ret_val == 1:
